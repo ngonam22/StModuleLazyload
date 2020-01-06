@@ -4,7 +4,8 @@
     "type": "plugin",
     "require": {
         "php": "^7.2",
-        "zendframework/zend-mvc": "^3.0.3"
+        "zendframework/zend-mvc": "3.1.*",
+        "zendframework/zend-modulemanager": "2.8.*"
     },
     "require-dev": {
         "symfony/var-dumper": "^3.4"
