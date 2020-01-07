@@ -9,27 +9,52 @@
 namespace StModuleLazyload\Service;
 
 use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
-use Zend\ServiceManager\Exception\ServiceNotCreatedException;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
-use Zend\ServiceManager\Factory\FactoryInterface;
 use StModuleLazyload\ModuleManager\ModuleManager;
 use StModuleLazyload\ModuleManager\ModuleEvent;
 
 use Zend\ModuleManager\Listener\ListenerOptions;
 use Zend\ModuleManager\Listener\DefaultListenerAggregate;
 
+use Zend\Mvc\Service\ModuleManagerFactory as BaseModuleManagerFactory;
 
-
-class ModuleManagerFactory implements FactoryInterface
+class ModuleManagerFactory extends BaseModuleManagerFactory
 {
+    /**
+     * @inheritdoc
+     */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $configuration = $container->get('ApplicationConfig');
         $listenerOptions  = new ListenerOptions($configuration['module_listener_options']);
         $defaultListeners = new DefaultListenerAggregate($listenerOptions);
-        $serviceListener  = $container->get('ServiceListener');
 
+        $serviceListener  = $this->addCommonManagers($container);
+
+
+        $events = $container->get('EventManager');
+        $defaultListeners->attach($events);
+        $serviceListener->attach($events);
+
+        $moduleEvent = new ModuleEvent;
+        $moduleEvent->setParam('ServiceManager', $container);
+
+        $moduleManager = new ModuleManager($configuration['modules'], $events);
+        $moduleManager->setEvent($moduleEvent);
+
+        return $moduleManager;
+    }
+
+    /**
+     * Add common Service Managers
+     *
+     * @param ContainerInterface $container
+     * @param null               $serviceListener
+     * @return mixed|null
+     */
+    private function addCommonManagers(ContainerInterface $container, $serviceListener = null)
+    {
+        if (empty($serviceListener))
+            $serviceListener  = $container->get('ServiceListener');
 
         $serviceListener->addServiceManager(
             $container,
@@ -62,19 +87,6 @@ class ModuleManagerFactory implements FactoryInterface
             'getRouteConfig'
         );
 
-
-        $events = $container->get('EventManager');
-        $defaultListeners->attach($events);
-        $serviceListener->attach($events);
-        //        $events->attach($serviceListener, null);
-
-        $moduleEvent = new ModuleEvent;
-        $moduleEvent->setParam('ServiceManager', $container);
-
-        $moduleManager = new ModuleManager($configuration['modules'], $events);
-        $moduleManager->setEvent($moduleEvent);
-
-        return $moduleManager;
+        return $serviceListener;
     }
-
 }
