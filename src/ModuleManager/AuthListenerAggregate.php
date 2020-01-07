@@ -15,7 +15,14 @@ class AuthListenerAggregate extends DefaultListenerAggregate
 {
     public function attach(EventManagerInterface $events, $priority = 1)
     {
-        $options = $this->getOptions();
+        $options           = $this->getOptions();
+        $lazyLoadingConfig = $options->getLazyLoading();
+        $authManager       = new AuthManager($lazyLoadingConfig);
+
+        $this->listeners[] = $events->attach(
+            ModuleEvent::EVENT_LOAD_MODULE_AUTH,
+            [$authManager, 'authorize']
+        );
         return parent::attach($events, $priority);
     }
 
