@@ -47,8 +47,10 @@ class ModuleManager extends BaseModuleManager
 
         foreach ($this->getModules() as $moduleName) {
 
+            $formattedModuleName = strtolower($moduleName);
+
             // for modules not in the lazy load list, we init them all
-            if (in_array($moduleName, $lazyLoadModules))
+            if (in_array($formattedModuleName, $lazyLoadModules))
                 $auth = $this->loadModuleAuth($moduleName);
             else
                 $auth = true;
