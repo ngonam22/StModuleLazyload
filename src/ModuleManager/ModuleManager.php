@@ -33,6 +33,7 @@ class ModuleManager extends BaseModuleManager
 
         $modules = array();
         foreach ($this->getModules() as $moduleName) {
+            $auth = $this->loadModuleAuth($moduleName);
             if ($moduleName == 'Admin')
                 continue;
 
@@ -47,5 +48,27 @@ class ModuleManager extends BaseModuleManager
 
         //        dd($modules);
         $this->setModules($modules);
+    }
+
+    /**
+     * Get auth to load a specific module by name.
+     *
+     * @param string $moduleName
+     * @triggers loadModule.resolve
+     * @triggers loadModule
+     * @return mixed Module's Module class
+     */
+    public function loadModuleAuth($moduleName)
+    {
+        $event = $this->getEvent();
+        $event->setModuleName($moduleName);
+
+        $result = $this->getEventManager()->trigger(ModuleEvent::EVENT_LOAD_MODULE_AUTH, $this, $event);
+
+        if(!$result->last()) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -9,11 +9,13 @@
 namespace StModuleLazyload\Service;
 
 use Interop\Container\ContainerInterface;
+
 use StModuleLazyload\ModuleManager\ModuleManager;
 use StModuleLazyload\ModuleManager\ModuleEvent;
+use StModuleLazyload\ModuleManager\ListenerOptions;
+use StModuleLazyload\ModuleManager\AuthListenerAggregate;
 
-use Zend\ModuleManager\Listener\ListenerOptions;
-use Zend\ModuleManager\Listener\DefaultListenerAggregate;
+//use Zend\ModuleManager\Listener\DefaultListenerAggregate;
 
 use Zend\Mvc\Service\ModuleManagerFactory as BaseModuleManagerFactory;
 
@@ -26,7 +28,7 @@ class ModuleManagerFactory extends BaseModuleManagerFactory
     {
         $configuration = $container->get('ApplicationConfig');
         $listenerOptions  = new ListenerOptions($configuration['module_listener_options']);
-        $defaultListeners = new DefaultListenerAggregate($listenerOptions);
+        $defaultListeners = new AuthListenerAggregate($listenerOptions);
 
         $serviceListener  = $this->addCommonManagers($container);
 
