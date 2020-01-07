@@ -40,8 +40,9 @@ class ModuleManagerFactory extends BaseModuleManagerFactory
         $moduleEvent = new ModuleEvent;
         $moduleEvent->setParam('ServiceManager', $container);
 
-        $moduleManager = new ModuleManager($configuration['modules'], $events);
+        $moduleManager = new ModuleManager($options['modules'], $events);
         $moduleManager->setEvent($moduleEvent);
+        $moduleManager->setConfig($listenerOptions->getLazyLoading());
 
         return $moduleManager;
     }

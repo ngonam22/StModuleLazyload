@@ -9,9 +9,16 @@
 namespace StModuleLazyload\ModuleManager;
 
 use Zend\ModuleManager\ModuleManager as BaseModuleManager;
+use StModuleLazyload\Config\Config;
 
 class ModuleManager extends BaseModuleManager
 {
+    /**
+     * @var Config
+     */
+    protected $config;
+
+
     public function loadModules()
     {
         $this->getEventManager()->trigger(ModuleEvent::EVENT_LOAD_MODULES_AUTH, $this, $this->getEvent());
@@ -70,5 +77,13 @@ class ModuleManager extends BaseModuleManager
         }
 
         return true;
+    }
+
+    /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config)
+    {
+        $this->config = $config;
     }
 }

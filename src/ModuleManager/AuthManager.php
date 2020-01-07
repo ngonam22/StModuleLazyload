@@ -9,6 +9,7 @@
 namespace StModuleLazyload\ModuleManager;
 
 use \StModuleLazyload\Config\Config;
+use Zend\EventManager\Event;
 
 class AuthManager
 {
@@ -25,7 +26,7 @@ class AuthManager
             $this->config = new Config($config);
     }
 
-    public function authorize($e)
+    public function authorize(Event $e)
     {
         return true;
     }

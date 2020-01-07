@@ -8,30 +8,33 @@
 
 namespace StModuleLazyload\ModuleManager;
 
+use StModuleLazyload\Config\Config;
 use Zend\ModuleManager\Listener\ListenerOptions as BaseListener;
 
 class ListenerOptions extends BaseListener
 {
     /**
-     * Array of modules will be loaded with conditions
-     *
-     * @var array
+     * @var
      */
-    protected $lazyLoading = [];
+    protected $lazyLoading;
 
     /**
-     * @return array
+     * @return mixed
      */
-    public function getLazyLoading(): array
+    public function getLazyLoading()
     {
         return $this->lazyLoading;
     }
 
     /**
-     * @param array $lazyLoading
+     * @param $lazyLoading
+     * @throws \Exception
      */
-    public function setLazyLoading(array $lazyLoading): void
+    public function setLazyLoading($lazyLoading): void
     {
-        $this->lazyLoading = $lazyLoading;
+        if (!is_array($lazyLoading))
+            throw new \Exception('Lazy Loading config must be array');
+
+        $this->lazyLoading = new Config($lazyLoading);
     }
 }
