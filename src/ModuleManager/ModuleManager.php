@@ -32,29 +32,35 @@ class ModuleManager extends BaseModuleManager
         parent::attachDefaultListeners($events);
     }
 
+    /**
+     * Listener that modifies modules list
+     *
+     * @return $this
+     */
     public function onLoadModulesAuth()
     {
-        if (true === $this->modulesAreLoaded) {
+        if ($this->modulesAreLoaded)
             return $this;
-        }
 
-        $modules = array();
+        $modules         = [];
+        $lazyLoadModules = array_keys($this->config->getListenersModule());
+
         foreach ($this->getModules() as $moduleName) {
-            $auth = $this->loadModuleAuth($moduleName);
-            if ($moduleName == 'Admin')
-                continue;
 
-            $modules[] = $moduleName;
+            // for modules not in the lazy load list, we init them all
+            if (in_array($moduleName, $lazyLoadModules))
+                $auth = $this->loadModuleAuth($moduleName);
+            else
+                $auth = true;
+
+            if ($auth)
+                $modules[] = $moduleName;
         }
-        //        foreach ($this->getModules() as $moduleName) {
-        //            $auth = $this->loadModuleAuth($moduleName);
-        //            if($auth) {
-        //                $modules[] = $moduleName;
-        //            }
-        //        }
 
-        //        dd($modules);
+        // set back the list of modules that will be initialized
         $this->setModules($modules);
+
+        return $this;
     }
 
     /**
