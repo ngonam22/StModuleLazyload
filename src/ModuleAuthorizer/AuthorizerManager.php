@@ -8,9 +8,10 @@
 
 namespace StModuleLazyload\ModuleAuthorizer;
 
-use Zend\ServiceManager\AbstractPluginManager;
+//use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\ServiceManager;
 
-class AuthorizerManager extends AbstractPluginManager
+class AuthorizerManager extends ServiceManager
 {
     protected $invokableClasses = [
         'url' => UrlAuthorizer::class

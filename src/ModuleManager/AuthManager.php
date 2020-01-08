@@ -64,12 +64,17 @@ class AuthManager
      * @return AbstractModuleAuthorizer
      * @throws \Exception
      */
-    public function loadAuthorizer(string $name, $options = [])
+    public function loadAuthorizer(string $name)
     {
         if (!$this->getAuthorizerManager()->has($name))
             throw new \Exception('Authorizer instance is not fully loaded or not found');
 
-        return $this->getAuthorizerManager()->get($name, $options);
+        $authorizer = $this->getAuthorizerManager()->get($name);
+
+        if ($authorizer instanceof AbstractModuleAuthorizer)
+            return $authorizer;
+
+        throw new \Exception('Authorize instance must extend AbstractModuleAuthorizer');
     }
 
     public function getAuthorizerManager()
