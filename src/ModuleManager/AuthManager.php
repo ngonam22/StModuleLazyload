@@ -9,6 +9,7 @@
 namespace StModuleLazyload\ModuleManager;
 
 use \StModuleLazyload\Config\Config;
+use StModuleLazyload\ModuleAuthorizer\AuthorizerManager;
 use Zend\EventManager\Event;
 
 class AuthManager
@@ -17,6 +18,11 @@ class AuthManager
      * @var \StModuleLazyload\Config\Config
      */
     protected $config;
+
+    /**
+     * @var AuthorizerManager
+     */
+    protected $authorizerManager;
 
     public function __construct($config)
     {
@@ -28,6 +34,18 @@ class AuthManager
 
     public function authorize(Event $e)
     {
+        $moduleName = strtolower($e->getParam('moduleName'));
+        $authorizers = $this->config->getListenersModule($moduleName);
+
+
         return true;
+    }
+
+    public function getAuthorizerManager()
+    {
+        if (empty($this->authorizerManager))
+            $this->authorizerManager = new AuthorizerManager();
+
+        return $this->authorizerManager;
     }
 }
