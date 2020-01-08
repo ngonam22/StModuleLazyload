@@ -9,6 +9,7 @@
 namespace StModuleLazyload\ModuleManager;
 
 use \StModuleLazyload\Config\Config;
+use StModuleLazyload\ModuleAuthorizer\AbstractModuleAuthorizer;
 use StModuleLazyload\ModuleAuthorizer\AuthorizerManager;
 use Zend\EventManager\Event;
 
@@ -32,13 +33,43 @@ class AuthManager
             $this->config = new Config($config);
     }
 
-    public function authorize(Event $e)
+    /**
+     * Authorize the module in lazy load list
+     *
+     * @param Event $e
+     * @return bool
+     * @throws \Exception
+     */
+    public function authorize(Event $e): bool
     {
         $moduleName = strtolower($e->getParam('moduleName'));
-        $authorizers = $this->config->getListenersModule($moduleName);
+        $authorizerConfigs = $this->config->getListenersModule($moduleName);
 
+        foreach ($authorizerConfigs as $authorizerName => $authorizerConfig) {
+
+            $authorizer = $this->loadAuthorizer($authorizerName);
+            $authorizer->setConfig($authorizerConfig);
+
+            // break the list if it fails any authorizer
+            if (!$authorizer->authorize())
+                return false;
+        }
 
         return true;
+    }
+
+    /**
+     * @param string $name
+     * @param array  $options
+     * @return AbstractModuleAuthorizer
+     * @throws \Exception
+     */
+    public function loadAuthorizer(string $name, $options = [])
+    {
+        if (!$this->getAuthorizerManager()->has($name))
+            throw new \Exception('Authorizer instance is not fully loaded or not found');
+
+        return $this->getAuthorizerManager()->get($name, $options);
     }
 
     public function getAuthorizerManager()

@@ -13,6 +13,10 @@ class UrlAuthorizer extends AbstractModuleAuthorizer
 {
     public function authorize(): bool
     {
-        return true;
+        if (isset($this->config['regex'])) {
+            return preg_match('(^' . $this->config['regex'] . '$)', @$_SERVER['REQUEST_URI']);
+        }
+
+        return false;
     }
 }

@@ -9,12 +9,11 @@
 namespace StModuleLazyload\ModuleAuthorizer;
 
 
-use StModuleLazyload\Config\Config;
 
 abstract class AbstractModuleAuthorizer
 {
     /**
-     * @var Config
+     * @var array
      */
     protected $config;
 
@@ -26,17 +25,17 @@ abstract class AbstractModuleAuthorizer
     abstract public function authorize(): bool;
 
     /**
-     * @return Config
+     * @return array
      */
-    public function getConfig(): Config
+    public function getConfig(): array
     {
         return $this->config;
     }
 
     /**
-     * @param Config $config
+     * @param array $config
      */
-    public function setConfig(Config $config): void
+    public function setConfig(array $config): void
     {
         $this->config = $config;
     }
